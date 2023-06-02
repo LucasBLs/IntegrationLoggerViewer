@@ -1,0 +1,24 @@
+﻿@page "/logs/{IntegrationNameFilter?}"
+@using IntegrationLoggerViewer.Components.Integration
+@using IntegrationLogger.Models
+@using IntegrationLogger
+@inject NavigationManager NavigationManager
+
+<MudContainer>
+    <LogTable IntegrationNameFilter="@IntegrationNameFilter" OnDetailsClicked="OpenModal" />
+</MudContainer>
+
+<LogDetailsModal @bind-IsVisible="@_modalOpen" DetailId="@_selectedDetailId" />
+
+@code {
+    [Parameter] public string IntegrationNameFilter { get; set; } = string.Empty;
+
+    private bool _modalOpen = false;
+    private Guid _selectedDetailId = Guid.Empty;
+
+    private void OpenModal(Guid detailId)
+    {
+        _selectedDetailId = detailId;
+        _modalOpen = true;
+    }
+}

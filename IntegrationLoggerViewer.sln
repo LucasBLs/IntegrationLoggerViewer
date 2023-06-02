@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationLoggerViewer", "IntegrationLoggerViewer\IntegrationLoggerViewer.csproj", "{02376586-5EB2-4D04-A42A-CA5A5667F96F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationLogger", "..\..\source\repos\IntegrationLogger\IntegrationLogger.csproj", "{5041762B-F57D-4612-A9DF-3EC1F465BEFE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{02376586-5EB2-4D04-A42A-CA5A5667F96F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02376586-5EB2-4D04-A42A-CA5A5667F96F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02376586-5EB2-4D04-A42A-CA5A5667F96F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02376586-5EB2-4D04-A42A-CA5A5667F96F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5041762B-F57D-4612-A9DF-3EC1F465BEFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5041762B-F57D-4612-A9DF-3EC1F465BEFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5041762B-F57D-4612-A9DF-3EC1F465BEFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5041762B-F57D-4612-A9DF-3EC1F465BEFE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B995257A-AAC9-400F-9588-C9B1EA3CD629}
+	EndGlobalSection
+EndGlobal

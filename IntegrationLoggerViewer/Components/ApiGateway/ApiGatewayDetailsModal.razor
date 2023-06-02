@@ -1,0 +1,102 @@
+﻿@inject IApiGatewayLogRepository _repository
+
+<style>
+    .selected-alert-success {
+        border: 2px solid rgb(13,222,156);
+        box-shadow: 0 0 5px rgb(13,222,156);
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    .selected-alert-failed {
+        border: 2px solid rgb(248,119,134);
+        box-shadow: 0 0 5px rgb(248,119,134);
+        cursor: pointer;
+        border-radius: 4px;
+    }
+</style>
+
+<MudDialog @key="@_modalKey" @bind-IsVisible="@IsVisible" Options="new DialogOptions{ MaxWidth = MaxWidth.Large, FullWidth = true }">
+    <DialogContent>
+        <MudText Typo="Typo.h6" Color="@(_hasErrorInList ? Color.Error : Color.Success)">Linha do tempo</MudText>
+        <MudGrid>
+            <MudItem xs="5">
+                <div id="unique_id_scroll_section" class="ma-0" style="height:550px;overflow: auto;">
+                    <MudPaper Elevation="0" Height="100px" Class="d-flex flex-column justify-space-between py-4">
+                        <MudTimeline TimelinePosition="TimelinePosition.Left">
+                            @foreach (var item in GatewayDetails)
+                            {
+                                var isSuccess = item.Status == IntegrationLogger.Enums.IntegrationStatus.Success;
+                                <MudTimelineItem Color="@(isSuccess ? Color.Success : Color.Error)" Variant="Variant.Filled" Size="Size.Small" Icon="@(isSuccess ? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.Error)">
+                                    <ItemContent>
+                                        <MudAlert Severity="@(isSuccess ? Severity.Success : Severity.Error)" OnClick="@(() => ShowErrorDetails(item))" Class="@(selectedItem == item ? (isSuccess ? "selected-alert-success" : "selected-alert-failed") : "")" Dense="true" NoIcon="true">
+                                            @item.Message
+                                            <br>
+                                            @item.Timestamp.ToString("dd/MM/yyyy HH:mm:ss:ffff")
+                                        </MudAlert>
+                                    </ItemContent>
+                                    <ItemOpposite>
+                                        <MudText Color="@(isSuccess ? Color.Success : Color.Error)"></MudText>
+                                    </ItemOpposite>
+                                </MudTimelineItem>
+                            }
+                        </MudTimeline>
+                    </MudPaper>
+                </div>
+            </MudItem>
+            <MudItem xs="7">
+                <MudTextField @bind-Value="@_modalContent" Label="Conteúdo" T="string" Lines="20" Variant="Variant.Outlined" FullWidth="true" />
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" OnClick="@(() => CloseModal())">Fechar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+    [Parameter] public Guid DetailId { get; set; }
+
+    private List<GatewayDetail> GatewayDetails = new();
+    private string? _modalContent = "";
+    private GatewayDetail? selectedItem = null;
+    private int _modalKey = 0;
+    private bool _hasErrorInList;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsVisible)
+        {
+            await LoadIntegrationItems();
+        }
+    }
+
+    private async Task LoadIntegrationItems()
+    {
+        var gatewayDetails = await GetIntegrationItems(DetailId);
+        GatewayDetails = gatewayDetails;
+
+        _hasErrorInList = gatewayDetails.Any(x => x.Status != IntegrationStatus.Success);
+        selectedItem = gatewayDetails.FirstOrDefault(x => !string.IsNullOrEmpty(x.Message));
+        _modalContent = gatewayDetails.Count > 0 ? gatewayDetails[0].Content : "Nenhum item encontrado.";
+    }
+
+    private async Task<List<GatewayDetail>> GetIntegrationItems(Guid detailId)
+    {
+        return await _repository.GetGatewayDetailsByLogId(detailId);
+    }
+
+    private void ShowErrorDetails(GatewayDetail detail)
+    {
+        selectedItem = detail;
+        _modalContent = detail.Content;
+    }
+
+    private async Task CloseModal()
+    {
+        IsVisible = false;
+        await IsVisibleChanged.InvokeAsync(IsVisible);
+    }
+}

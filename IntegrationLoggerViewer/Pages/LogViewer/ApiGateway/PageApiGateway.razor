@@ -1,0 +1,183 @@
+﻿@page "/gateway-log"
+@using IntegrationLoggerViewer.Components.ApiGateway
+@inject NavigationManager NavigationManager
+@inject IApiGatewayLogRepository _repository;
+
+<MudContainer>
+    <MudExpansionPanels Elevation="1" Rounded="true">
+        <MudExpansionPanel>
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.FilterList" class="mr-3"></MudIcon>
+                    <MudText><strong>Filtro</strong> - Logs de ApiGateway</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudGrid>
+
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudDatePicker Label="Data inicial"
+                                       PickerVariant="PickerVariant.Inline"
+                                       Variant="Variant.Outlined"
+                                       Margin="Margin.Dense"
+                                       DateFormat="dd/MM/yyyy"
+                                       @bind-Date="@startDateFilter"
+                                       Editable="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudTimePicker Label="Hora inicial"
+                                       Margin="Margin.Dense"
+                                       Variant="Variant.Outlined"
+                                       TimeFormat="HH:mm:ss"
+                                       @bind-Time="@startTimeFilter"
+                                       Editable="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudDatePicker Label="Data final"
+                                       PickerVariant="PickerVariant.Inline"
+                                       Variant="Variant.Outlined"
+                                       Margin="Margin.Dense"
+                                       DateFormat="dd/MM/yyyy"
+                                       @bind-Date="@endDateFilter"
+                                       Editable="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudTimePicker Label="Hora final"
+                                       Margin="Margin.Dense"
+                                       Variant="Variant.Outlined"
+                                       TimeFormat="HH:mm:ss"
+                                       @bind-Time="@endTimeFilter"
+                                       Editable="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="2">
+                        <MudTextField Value="@searchStatusCode"
+                                      Margin="Margin.Dense"
+                                      Variant="Variant.Outlined"
+                                      ValueChanged="@(async (int? value) => { searchStatusCode = value; SearchAndUpdateTable(); })"
+                                      Label="StatusCode" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudTextField Value="@searchString"
+                                      Margin="Margin.Dense"
+                                      Variant="Variant.Outlined"
+                                      ValueChanged="@(async (string value) => { searchString = value; SearchAndUpdateTable(); })"
+                                      Label="Nome de projeto" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" />
+                    </MudItem>
+
+                    <MudItem xs="6" sm="6" md="2">
+                        <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="@(async () => SearchAndUpdateTable())">Consultar</MudButton>
+                    </MudItem>
+                    <MudItem xs="6" sm="6" md="3">
+                        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="async () => ClearFilters()">Limpar filtros</MudButton>
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </MudExpansionPanel>
+    </MudExpansionPanels>
+
+    <MudTable @key="@tableKey" FixedHeader=true Items="@logs" PageSize="@pageSize" ServerData="new Func<TableState, Task<TableData<GatewayLog>>>(GetTableData)" TableState="@tableState">
+        <HeaderContent>
+            <MudTh>Action</MudTh>
+            <MudTh>ProjectName</MudTh>
+            <MudTh>RequestPath</MudTh>
+            <MudTh>HttpMethod</MudTh>
+            <MudTh>ClientIp</MudTh>
+            <MudTh>StatusCode</MudTh>
+            <MudTh>RequestDuration (ms)</MudTh>
+            <MudTh>Timestamp</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Actions">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="@(() => OpenModal(context.Id))">Detalhes</MudButton>
+            </MudTd>
+            <MudTd DataLabel="ProjectName">@context.ProjectName</MudTd>
+            <MudTd DataLabel="RequestPath">@context.RequestPath</MudTd>
+            <MudTd DataLabel="HttpMethod">@context.HttpMethod</MudTd>
+            <MudTd DataLabel="ClientIp">@context.ClientIp</MudTd>
+            <MudTd DataLabel="StatusCode" Style="@($"{GetStatusColor(context.StatusCode)}")">@context.StatusCode</MudTd>
+            <MudTd DataLabel="ClientIp">@context.RequestDuration</MudTd>
+            <MudTd DataLabel="Timestamp">@context.Timestamp.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss:ffff")</MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</MudContainer>
+
+<ApiGatewayDetailsModal @bind-IsVisible="@_modalOpen" DetailId="@_selectedDetailId"></ApiGatewayDetailsModal>
+
+@code {
+    // Campos
+    private List<GatewayLog> logs = new();
+    private string searchString = "";
+    private int? searchStatusCode = null;
+    private int pageSize = 10;
+    private TableState tableState = new TableState { PageSize = 10 };
+    private int tableKey = 0;
+    private DateTime? startDateFilter = DateTime.Now.ToLocalTime().AddDays(-1).Date;
+    private DateTime? endDateFilter = DateTime.Now.ToLocalTime().Date;
+    private TimeSpan? startTimeFilter = new TimeSpan(0, 0, 1);
+    private TimeSpan? endTimeFilter = new TimeSpan(23, 59, 59);
+
+    // Métodos
+    private async Task<TableData<GatewayLog>> GetTableData(TableState state)
+    {
+        pageSize = state.PageSize;
+
+        DateTime? combinedStartDate = startDateFilter.HasValue && startTimeFilter.HasValue
+            ? startDateFilter.Value.Date + startTimeFilter.Value
+            : startDateFilter;
+
+        DateTime? combinedEndDate = endDateFilter.HasValue && endTimeFilter.HasValue
+            ? endDateFilter.Value.Date + endTimeFilter.Value
+            : endDateFilter;
+
+        var (logs, totalCount) = await _repository.GetGatewayLogs(combinedStartDate, combinedEndDate, projectName: searchString, statusCode: searchStatusCode, pageIndex: state.Page + 1, pageSize: pageSize);
+
+        return new TableData<GatewayLog> { TotalItems = totalCount, Items = logs.OrderByDescending(x => x.Timestamp) };
+    }
+    private void SearchAndUpdateTable()
+    {
+        _modalOpen = false;
+        tableState.Page = 0;
+        tableKey++;
+        StateHasChanged();
+    }
+    private string GetStatusColor(int? status)
+    {
+        return status switch
+        {
+            >= 200 and <= 299 => "color: rgb(13, 222, 156); text-shadow: 0 0 1px rgb(13,222,156);", // Cor correspondente a Color.Success
+            _ => "color: rgb(248,119,134); text-shadow: 0 0 1px rgb(248,119,134);", // Cor correspondente a Color.Error
+        };
+    }
+
+    private DateRange GetDateRange()
+    {
+        return new DateRange(startDateFilter, endDateFilter);
+    }
+    private void ClearFilters()
+    {
+        searchString = "";
+        startDateFilter = DateTime.Now.ToLocalTime().AddDays(-3).Date;
+        endDateFilter = DateTime.Now.ToLocalTime().Date;
+        startTimeFilter = DateTime.Now.ToLocalTime().TimeOfDay;
+        endTimeFilter = DateTime.Now.ToLocalTime().TimeOfDay;
+
+        SearchAndUpdateTable();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SearchAndUpdateTable();
+    }
+
+    private bool _modalOpen = false;
+    private Guid _selectedDetailId = Guid.Empty;
+
+    private void OpenModal(Guid detailId)
+    {
+        _selectedDetailId = detailId;
+        _modalOpen = true;
+    }
+}

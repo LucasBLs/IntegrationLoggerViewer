@@ -1,0 +1,66 @@
+﻿@page "/integrations"
+@using IntegrationLogger;
+@using IntegrationLogger.Models
+@using Microsoft.EntityFrameworkCore;
+@using Microsoft.EntityFrameworkCore.Query;
+@using MudBlazor
+@using IntegrationLogger.Models.Integration;
+@inject IIntegrationLogRepository _repository;
+@inject NavigationManager NavigationManager
+
+<MudContainer>
+    <MudText Typo="Typo.h4">Integrações</MudText>
+    <MudTextField Value="@searchString" ValueChanged="@(async (string value) => { searchString = value; await SearchAndUpdateTable(); })"
+                  Label="Buscar" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" />
+    <MudTable @key="@tableKey" Items="@logs" PageSize="@pageSize" ServerData="new Func<TableState, Task<TableData<IntegrationLog>>>(GetTableData)" TableState="@tableState">
+        <HeaderContent>
+            <MudTh></MudTh>
+            <MudTh>IntegrationName</MudTh>
+            <MudTh>Message</MudTh>
+            <MudTh>SourceSystem</MudTh>
+            <MudTh>ExternalSystem</MudTh>
+            <MudTh>Timestamp</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>
+                <MudIconButton Icon="@Icons.Material.Filled.Search" Color="Color.Primary" OnClick="() => NavigateToLogDetail(context.IntegrationName!)" />
+            </MudTd>
+            <MudTd DataLabel="IntegrationName">@context.IntegrationName</MudTd>
+            <MudTd DataLabel="Message">@context.Message</MudTd>
+            <MudTd DataLabel="SourceSystem">@context.SourceSystem</MudTd>
+            <MudTd DataLabel="ExternalSystem">@context.ExternalSystem</MudTd>
+            <MudTd DataLabel="Timestamp">@context.Timestamp.ToString("dd/MM/yyyy HH:mm:ss:ffff")</MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</MudContainer>
+
+@code {
+    private List<IntegrationLog> logs = new();
+    private string searchString = "";
+    private int pageSize = 10;
+    private TableState tableState = new TableState { PageSize = 10 };
+    private int tableKey = 0;
+
+    private async Task<TableData<IntegrationLog>> GetTableData(TableState state)
+    {
+        pageSize = state.PageSize;
+        var (logs, totalCount) = await _repository.GetLogs(integrationName: searchString, groupByIntegrationName: true, pageIndex: state.Page + 1, pageSize: pageSize);
+        return new TableData<IntegrationLog> { TotalItems = totalCount, Items = logs };
+    }
+
+    private async Task SearchAndUpdateTable()
+    {
+        tableState.Page = 0;
+        tableKey++;
+        await GetTableData(tableState);
+        StateHasChanged();
+    }
+
+    private void NavigateToLogDetail(string integrationName)
+    {
+        NavigationManager.NavigateTo($"/logs/{Uri.EscapeDataString(integrationName)}");
+    }
+}
