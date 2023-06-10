@@ -27,6 +27,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 builder.Services.AddMudServices();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 

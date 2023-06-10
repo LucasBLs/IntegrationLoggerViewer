@@ -1,7 +1,9 @@
-﻿@inject NavigationManager NavigationManager
+﻿@using System.Security.Claims;
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationState
 
 <MudPaper Class="py-4" Elevation="0">
-    <MudNavMenu Rounded="true" Margin="Margin.Dense" Color="Color.Primary" Bordered="true">
+    <MudNavMenu Rounded="true" Margin="Margin.Normal" Color="Color.Primary" Bordered="true">
         <MudText Typo="Typo.h6" Color="Color.Primary" Class="px-4">Integration Viewer</MudText>
         <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary">Visualize e gerencie logs de integrações</MudText>
         <MudDivider Class="my-2" />
@@ -11,16 +13,45 @@
             <MudNavLink Href="logs" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.EventNote">Logs</MudNavLink>
         </MudNavGroup>
         <MudNavLink Href="gateway-log" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Api">Api Gateway</MudNavLink>
-        <div class="logout-btn">
-            <MudButton Variant="Variant.Text" OnClick="() => Logout()" StartIcon="@Icons.Material.Filled.ExitToApp">Logout</MudButton>
-        </div>
+
+        <MudCard Class="mt-5">
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        <MudAvatar Color="Color.Secondary">@_username?.Take(1).FirstOrDefault().ToString().ToUpper()</MudAvatar>
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1">@_username?.Split("@").FirstOrDefault()</MudText>
+                        <MudText Typo="Typo.body2">@_username</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIconButton Href="Identity/Account/Manage" Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+            <MudCardActions>
+                <MudButton OnClick="() => Logout()" Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ExitToApp" Color="Color.Default">Sair</MudButton>
+            </MudCardActions>
+        </MudCard>
     </MudNavMenu>
 </MudPaper>
 
 @code {
+    string? _username = "";
+
     private void Logout()
     {
         var url = "/Identity/Account/Logout";
         NavigationManager.NavigateTo(url, forceLoad: true);
+    }
+
+    private async Task<ClaimsPrincipal> GetCurrentUserAsync()
+    {
+        var authState = await AuthenticationState.GetAuthenticationStateAsync();
+        return authState.User;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await GetCurrentUserAsync();
+        _username = user?.Identity?.Name;
     }
 }

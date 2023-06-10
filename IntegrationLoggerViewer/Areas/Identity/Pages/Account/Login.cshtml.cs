@@ -84,7 +84,7 @@ namespace IntegrationLoggerViewer.Areas.Identity.Pages.Account
         {
             try
             {
-                MailAddress m = new MailAddress(emailaddress);
+                MailAddress m = new (emailaddress);
                 return true;
             }
             catch (FormatException)
@@ -128,7 +128,6 @@ namespace IntegrationLoggerViewer.Areas.Identity.Pages.Account
                     }
                 }
 
-                var teste = await _userManager.FindByEmailAsync(Input.Email);
                 var result = await _signInManager.PasswordSignInAsync(userName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
@@ -137,7 +136,7 @@ namespace IntegrationLoggerViewer.Areas.Identity.Pages.Account
                 }
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, Input.RememberMe });
                 }
                 if (result.IsLockedOut)
                 {
