@@ -1,4 +1,6 @@
-﻿<MudPaper Class="py-4" Elevation="0">
+﻿@inject NavigationManager NavigationManager
+
+<MudPaper Class="py-4" Elevation="0">
     <MudNavMenu Rounded="true" Margin="Margin.Dense" Color="Color.Primary" Bordered="true">
         <MudText Typo="Typo.h6" Color="Color.Primary" Class="px-4">Integration Viewer</MudText>
         <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary">Visualize e gerencie logs de integrações</MudText>
@@ -9,5 +11,16 @@
             <MudNavLink Href="logs" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.EventNote">Logs</MudNavLink>
         </MudNavGroup>
         <MudNavLink Href="gateway-log" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Api">Api Gateway</MudNavLink>
+        <div class="logout-btn">
+            <MudButton Variant="Variant.Text" OnClick="() => Logout()" StartIcon="@Icons.Material.Filled.ExitToApp">Logout</MudButton>
+        </div>
     </MudNavMenu>
 </MudPaper>
+
+@code {
+    private void Logout()
+    {
+        var url = "/Identity/Account/Logout";
+        NavigationManager.NavigateTo(url, forceLoad: true);
+    }
+}

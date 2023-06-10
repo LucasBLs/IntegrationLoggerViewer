@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\source\repos\IntegrationLogger\IntegrationLogger.csproj" />
+    <ProjectReference Include="..\..\IntegrationLogger\IntegrationLogger.csproj" />
   </ItemGroup>
 
 </Project>
