@@ -5,7 +5,7 @@ VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationLoggerViewer", "IntegrationLoggerViewer\IntegrationLoggerViewer.csproj", "{02376586-5EB2-4D04-A42A-CA5A5667F96F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationLogger", "..\IntegrationLogger\IntegrationLogger.csproj", "{D07576B1-AB98-41B2-A94D-874310CFF4D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationLogger", "..\..\IntegrationLogger\IntegrationLogger.csproj", "{20CA8194-3061-4D24-B6C1-470C6A48A479}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{02376586-5EB2-4D04-A42A-CA5A5667F96F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02376586-5EB2-4D04-A42A-CA5A5667F96F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02376586-5EB2-4D04-A42A-CA5A5667F96F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D07576B1-AB98-41B2-A94D-874310CFF4D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D07576B1-AB98-41B2-A94D-874310CFF4D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D07576B1-AB98-41B2-A94D-874310CFF4D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D07576B1-AB98-41B2-A94D-874310CFF4D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20CA8194-3061-4D24-B6C1-470C6A48A479}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20CA8194-3061-4D24-B6C1-470C6A48A479}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20CA8194-3061-4D24-B6C1-470C6A48A479}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20CA8194-3061-4D24-B6C1-470C6A48A479}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

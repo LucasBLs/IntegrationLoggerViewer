@@ -14,11 +14,6 @@ var connectionString = builder.Configuration.GetConnectionString("OracleConnecti
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseOracle(connectionString));
 
-//builder.Services.AddAuthorization(options =>
-//{
-//    options.FallbackPolicy = options.DefaultPolicy;
-//});
-
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()

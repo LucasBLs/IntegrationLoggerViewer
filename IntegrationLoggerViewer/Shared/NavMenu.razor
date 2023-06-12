@@ -2,7 +2,7 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationState
 
-<MudPaper Class="py-4" Elevation="0">
+<MudPaper Class="py-4" Elevation="1">
     <MudNavMenu Rounded="true" Margin="Margin.Normal" Color="Color.Primary" Bordered="true">
         <MudText Typo="Typo.h6" Color="Color.Primary" Class="px-4">Integration Viewer</MudText>
         <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary">Visualize e gerencie logs de integrações</MudText>
@@ -14,10 +14,10 @@
         </MudNavGroup>
         <MudNavLink Href="gateway-log" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Api">Api Gateway</MudNavLink>
 
-        <MudCard Class="mt-5">
+        <MudCard Class="mt-5" Elevation="0">
                 <MudCardHeader>
                     <CardHeaderAvatar>
-                        <MudAvatar Color="Color.Secondary">@_username?.Take(1).FirstOrDefault().ToString().ToUpper()</MudAvatar>
+                        <MudAvatar Color="Color.Primary">@_username?.Take(1).FirstOrDefault().ToString().ToUpper()</MudAvatar>
                     </CardHeaderAvatar>
                     <CardHeaderContent>
                         <MudText Typo="Typo.body1">@_username?.Split("@").FirstOrDefault()</MudText>
