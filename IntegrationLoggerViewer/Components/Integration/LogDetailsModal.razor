@@ -21,7 +21,7 @@
         <MudText Typo="Typo.h6" Color="@(_hasErrorInList ? Color.Error : Color.Success)">Linha do tempo</MudText>
         <MudGrid>
             <MudItem xs="5">
-                <div id="unique_id_scroll_section" class="ma-0" style="height:600px;overflow: auto;">
+                <div id="unique_id_scroll_section" class="ma-0" style="height:550px;overflow: auto;">
                     <MudPaper Elevation="0" Height="100px" Class="d-flex flex-column justify-space-between py-4">
                         <MudTimeline TimelinePosition="TimelinePosition.Left">
                             @foreach (var item in IntegrationItems)
@@ -45,7 +45,7 @@
                 </div>
             </MudItem>
             <MudItem xs="7">
-                <MudTextField @bind-Value="@_modalContent" Label="Conteúdo" T="string" Lines="20" Variant="Variant.Outlined" FullWidth="true" />
+                <MudTextField @bind-Value="@_modalContent" Label="Conteúdo" T="string" Lines="25" Variant="Variant.Outlined" FullWidth="true" />
             </MudItem>
         </MudGrid>
     </DialogContent>
