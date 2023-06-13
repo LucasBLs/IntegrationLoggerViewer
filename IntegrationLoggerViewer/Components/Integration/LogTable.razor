@@ -151,7 +151,8 @@
     }
     private void SearchAndUpdateTable()
     {
-        IntegrationNameFilter = selectedProject;
+
+        IntegrationNameFilter = selectedProject != null ? selectedProject : IntegrationNameFilter;
         tableState.Page = 0;
         tableKey++;
         StateHasChanged();
